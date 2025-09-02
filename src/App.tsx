@@ -1,85 +1,127 @@
-import React, { useState } from 'react';
-import LandingScreen from './components/screens/LandingScreen';
-import FormScreen, { FormData } from './components/screens/FormScreen';
-import ReviewScreen from './components/screens/ReviewScreen';
-import ProcessingScreen from './components/screens/ProcessingScreen';
-import ResultsScreen from './components/screens/ResultsScreen';
-import AdminPanel from './components/admin/AdminPanel';
+import React from 'react'
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
+import { AuthProvider, useAuth } from './components/auth/AuthContext'
+import LandingPage from './pages/LandingPage'
+import LoginForm from './components/auth/LoginForm'
+import UserDashboard from './pages/UserDashboard'
+import AdminDashboard from './pages/AdminDashboard'
+import DetailedFormScreen from './components/forms/DetailedFormScreen'
+import AnalysisScreen from './components/screens/AnalysisScreen'
+import ResultsScreen from './components/screens/ResultsScreen'
 
-type AppScreen = 'landing' | 'form' | 'review' | 'processing' | 'results' | 'admin';
+// Protected Route Component
+const ProtectedRoute: React.FC<{ 
+  children: React.ReactNode
+  requiredRole?: 'admin' | 'user'
+}> = ({ children, requiredRole }) => {
+  const { user, loading } = useAuth()
 
-function App() {
-  const [currentScreen, setCurrentScreen] = useState<AppScreen>('landing');
-  const [formData, setFormData] = useState<FormData | null>(null);
-
-  // Check if admin mode is enabled (in real app, this would be based on authentication)
-  const isAdminMode = window.location.hash === '#admin';
-
-  if (isAdminMode) {
-    return <AdminPanel />;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
   }
 
-  const handleStartJourney = () => {
-    setCurrentScreen('form');
-  };
-
-  const handleFormComplete = (data: FormData) => {
-    setFormData(data);
-    setCurrentScreen('review');
-  };
-
-  const handleReviewConfirm = () => {
-    setCurrentScreen('processing');
-  };
-
-  const handleProcessingComplete = () => {
-    setCurrentScreen('results');
-  };
-
-  const handleBackToLanding = () => {
-    setCurrentScreen('landing');
-    setFormData(null);
-  };
-
-  const handleBackToForm = () => {
-    setCurrentScreen('form');
-  };
-
-  switch (currentScreen) {
-    case 'landing':
-      return <LandingScreen onStart={handleStartJourney} />;
-    
-    case 'form':
-      return (
-        <FormScreen 
-          onComplete={handleFormComplete}
-          onBack={handleBackToLanding}
-        />
-      );
-    
-    case 'review':
-      return formData ? (
-        <ReviewScreen
-          formData={formData}
-          onConfirm={handleReviewConfirm}
-          onBack={handleBackToForm}
-        />
-      ) : null;
-    
-    case 'processing':
-      return <ProcessingScreen onComplete={handleProcessingComplete} />;
-    
-    case 'results':
-      return formData ? (
-        <ResultsScreen
-          formData={formData}
-          onBack={handleBackToLanding}
-        />
-      ) : null;
-    
-    default:
-      return <LandingScreen onStart={handleStartJourney} />;
+  if (!user) {
+    return <Navigate to="/login" replace />
   }
+
+  if (requiredRole && user.user_metadata?.role !== requiredRole) {
+    return <Navigate to="/" replace />
+  }
+
+  return <>{children}</>
 }
 
-export default App;
+// Login Page Component
+const LoginPage: React.FC = () => {
+  const { user } = useAuth()
+  const navigate = useNavigate()
+
+  React.useEffect(() => {
+    if (user) {
+      // Redirect based on user role
+      if (user.user_metadata?.role === 'admin') {
+        navigate('/admin')
+      } else {
+        navigate('/user')
+      }
+    }
+  }, [user, navigate])
+
+  const handleLoginSuccess = () => {
+    // Navigation will be handled by the useEffect above
+  }
+
+  return <LoginForm onSuccess={handleLoginSuccess} />
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <div className="App">
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            
+            {/* Protected Routes */}
+            <Route 
+              path="/user" 
+              element={
+                <ProtectedRoute requiredRole="user">
+                  <UserDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin" 
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <AdminDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Detailed Form Routes */}
+            <Route 
+              path="/detailed-forms" 
+              element={
+                <ProtectedRoute requiredRole="user">
+                  <DetailedFormScreen />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/analysis" 
+              element={
+                <ProtectedRoute requiredRole="user">
+                  <AnalysisScreen />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/results" 
+              element={
+                <ProtectedRoute requiredRole="user">
+                  <ResultsScreen />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Catch all route */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </div>
+      </Router>
+    </AuthProvider>
+  )
+}
+
+export default App
