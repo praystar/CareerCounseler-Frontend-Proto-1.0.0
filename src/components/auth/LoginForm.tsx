@@ -51,7 +51,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             <span className="bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
-              NAVIRITI
+              NaviRiti
             </span>
           </h1>
           <p className="text-gray-600">Your AI-Powered Career Compass</p>

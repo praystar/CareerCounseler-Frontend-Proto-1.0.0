@@ -55,7 +55,7 @@ const LandingPage: React.FC = () => {
           </div>
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
             <span className="bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
-              NAVIRITI
+              NaviRiti
             </span>
           </h1>
           <p className="text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">

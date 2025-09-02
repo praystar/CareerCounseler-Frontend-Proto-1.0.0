@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🔍 NAVIRITI Application Status Check"
+echo "🔍 NaviRiti Application Status Check"
 echo "=================================="
 
 # Check if server is running

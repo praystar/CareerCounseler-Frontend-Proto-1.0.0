@@ -139,7 +139,7 @@ const UserDashboard: React.FC = () => {
               <div className="bg-gradient-to-r from-emerald-500 to-blue-500 p-4 rounded-2xl w-20 h-20 flex items-center justify-center mx-auto mb-4">
                 <Compass className="h-10 w-10 text-white" />
               </div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Welcome to NAVIRITI</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Welcome to NaviRiti</h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 Your AI-powered career guidance platform. We'll help you discover the perfect career path 
                 based on your interests, skills, and market trends.
@@ -801,7 +801,7 @@ const UserDashboard: React.FC = () => {
                 <div className="bg-gradient-to-r from-emerald-500 to-blue-500 p-2 rounded-lg">
                   <Compass className="h-6 w-6 text-white" />
                 </div>
-                <h1 className="text-2xl font-bold text-gray-900">NAVIRITI</h1>
+                <h1 className="text-2xl font-bold text-gray-900">NaviRiti</h1>
               </div>
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2">
